@@ -1,22 +1,31 @@
 package com.agenda.electronic.views.facilitador;
 
+import com.agenda.electronic.controller.ControllerFacilitador;
+import com.agenda.electronic.entity.FacilitadoresEntity;
+import com.agenda.electronic.entity.FacilitadoresEntity;
 import com.agenda.electronic.enums.EnumLabel;
 import com.agenda.electronic.enums.EnumMessages;
 import com.agenda.electronic.util.ValidationsString;
 import com.agenda.electronic.views.ViewMenu;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
+import com.vaadin.ui.components.grid.ItemClickListener;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @UIScope
 @SpringView(name = ViewFacilitadorRegister.VIEW_NAME)
 public class ViewFacilitadorRegister extends VerticalLayout implements View {
     public static final String VIEW_NAME = "RegisterFacilitador";
+    
+    @Autowired
+    ControllerFacilitador controllerFacilitador;
     //fields
     private TextField txtDocumento = new TextField(EnumLabel.IDENTITY_DOCUMENT_LABEL.getLabel());
     private TextField txtNames = new TextField(EnumLabel.NAMES_LABEL.getLabel());
@@ -35,14 +44,15 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
     private VerticalLayout leftLayout = new VerticalLayout();
     private VerticalLayout rightLayout = new VerticalLayout();
     private HorizontalLayout principalLayout = new HorizontalLayout();
-    private Panel principalPanel = new Panel("Registro de Eventos");
-    private HorizontalLayout operationButtons = new HorizontalLayout();
-    private HorizontalLayout operationButtonsFooter = new HorizontalLayout();
+    private Panel principalPanel = new Panel("Mantenimiento de Facilitador");
     private HorizontalLayout buttonsSecondaryLayout = new HorizontalLayout();
     private HorizontalLayout menuLayout = new HorizontalLayout();
     private HorizontalLayout buttonsPrincipalLayout = new HorizontalLayout();
     private GridLayout fieldsLayout = new GridLayout(2, 5);
-
+    private ListDataProvider<FacilitadoresEntity> dataProvider;
+    private Grid<FacilitadoresEntity> grid = new Grid<>();
+    List<FacilitadoresEntity> collectionFacilitadores;
+    private FacilitadoresEntity facilitadoresEntitySelected;
     private String action;
 
     public ViewFacilitadorRegister() {
@@ -59,13 +69,47 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
         setPropertiesField();
         setLeftPanel();
         setRightPanel();
-
+        createGrid();
+        leftLayout.addComponent(grid);
+        showFields(false);
         principalPanel.setSizeFull();
         principalPanel.setContent(principalLayout);
         this.addComponents(menuBar, principalPanel);
         this.setComponentAlignment(menuBar, Alignment.TOP_CENTER);
     }
 
+    private void showFields(boolean value) {
+        fieldsLayout.setVisible(value);
+        buttonsSecondaryLayout.setVisible(value);
+    }
+
+    private void createGrid() {
+        List<FacilitadoresEntity> collectionFacilitador = controllerFacilitador.findAllFacilitador();
+        dataProvider = DataProvider.ofCollection(collectionFacilitador);
+
+        grid.setEnabled(true);
+        grid.addColumn(FacilitadoresEntity::getIddocumento).setCaption(EnumLabel.IDENTITY_DOCUMENT_LABEL.getLabel());
+        grid.addColumn(FacilitadoresEntity::getNombres).setCaption(EnumLabel.NAMES_LABEL.getLabel());
+        grid.addColumn(FacilitadoresEntity::getApellidos).setCaption(EnumLabel.LAST_NAME_LABEL.getLabel());
+        grid.addColumn(FacilitadoresEntity::getTelefono).setCaption(EnumLabel.PHONE_NUMBER_LABEL.getLabel());
+        grid.setDataProvider(dataProvider);
+        grid.addItemClickListener(new ItemClickListener<FacilitadoresEntity>() {
+            @Override
+            public void itemClick(Grid.ItemClick<FacilitadoresEntity> event) {
+                facilitadoresEntitySelected = event.getItem();
+                txtDocumento.setValue(facilitadoresEntitySelected.getIddocumento());
+                txtEmail.setValue(facilitadoresEntitySelected.getCorreo());
+                txtLastNames.setValue(facilitadoresEntitySelected.getApellidos());
+                txtNames.setValue(facilitadoresEntitySelected.getNombres());
+                txtPhoneNumber.setValue(facilitadoresEntitySelected.getTelefono());
+
+            }
+        });
+    }
+
+    private void clearAction() {
+        action = "";
+    }
 
     private void setPropertiesField() {
 
@@ -104,10 +148,18 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (action.equalsIgnoreCase("new")) {
+                    addFacilitador();
                 } else if (action.equalsIgnoreCase("edit")) {
+                    updateFields();
+                    editFacilitador(facilitadoresEntitySelected);
                 } else if (action.equalsIgnoreCase("delete")) {
+                    deleteFacilitador(facilitadoresEntitySelected);
                     processDeleteUser();
                 }
+                clearFields();
+                clearAction();
+                showFields(false);
+                refreshInformationGrid();
             }
         });
 
@@ -115,9 +167,42 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
         rightLayout.addComponent(buttonsSecondaryLayout);
     }
 
+    private void deleteFacilitador(FacilitadoresEntity facilitadoresEntitySelected) {
+        controllerFacilitador.delete(facilitadoresEntitySelected);
+    }
+
+    private void editFacilitador(FacilitadoresEntity facilitadoresEntitySelected) {
+        controllerFacilitador.update(facilitadoresEntitySelected);
+    }
+
+    private void updateFields() {
+        facilitadoresEntitySelected.setCorreo(txtEmail.getValue());
+        facilitadoresEntitySelected.setTelefono(txtPhoneNumber.getValue());
+        facilitadoresEntitySelected.setApellidos(txtLastNames.getValue());
+        facilitadoresEntitySelected.setNombres(txtNames.getValue());
+        facilitadoresEntitySelected.setIddocumento(txtDocumento.getValue());
+
+    }
+
+    private void addFacilitador() {
+        FacilitadoresEntity facilitadoresEntity = new FacilitadoresEntity();
+        if (!isValidationAllField(EnumMessages.MESSAGE_REQUIRED_FIELD.getMessage())) {
+            try {
+                facilitadoresEntity.setIddocumento(txtDocumento.getValue());
+                facilitadoresEntity.setNombres(txtNames.getValue());
+                facilitadoresEntity.setApellidos(txtLastNames.getValue());
+                facilitadoresEntity.setTelefono(txtPhoneNumber.getValue());
+                facilitadoresEntity.setCorreo(txtEmail.getValue());
+                controllerFacilitador.save(facilitadoresEntity);
+            } catch (Exception e) {
+                Notification.show(EnumMessages.MESSAGES_ERROR_SAVE.getMessage(), Notification.Type.ERROR_MESSAGE);
+            }
+        }
+    }
+
     private void buildFields() {
         txtEmail.setPlaceholder("RamonSuarez@conors.com");
-        fieldsLayout.addComponents(txtDocumento, txtNames, txtPhoneNumber, txtEmail);
+        fieldsLayout.addComponents(txtDocumento, txtNames,txtLastNames, txtPhoneNumber, txtEmail);
         rightLayout.addComponent(fieldsLayout);
     }
 
@@ -127,6 +212,7 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 clearFields();
+                showFields(true);
                 action = "new";
             }
         });
@@ -134,6 +220,7 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (!isValidationAllField(EnumMessages.SELECT_REGISTER.getMessage())) {
+                    showFields(true);
                     action = "edit";
                 }
             }
@@ -142,6 +229,7 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (!isValidationAllField(EnumMessages.SELECT_REGISTER.getMessage())) {
+                    showFields(true);
                     action = "delete";
                     enableFields(false);
                 }
@@ -152,12 +240,11 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
     }
 
     private void clearFields() {
-
-        action = "";
         txtEmail.clear();
         txtNames.clear();
         txtDocumento.clear();
         txtPhoneNumber.clear();
+        txtLastNames.clear();
     }
 
     private void enableFields(boolean value) {
@@ -165,6 +252,7 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
         txtNames.setEnabled(value);
         txtDocumento.setEnabled(value);
         txtPhoneNumber.setEnabled(value);
+        txtLastNames.setEnabled(value);
     }
 
     private void processDeleteUser() {
@@ -195,12 +283,6 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
         } else if (ValidationsString.onlyString(txtNames.getValue())) {
             Notification.show("Nombre solo puede ser letras", Notification.Type.ERROR_MESSAGE);
             return true;
-        } else if (ValidationsString.onlyNumbers(txtPhoneNumber.getValue())) {
-            Notification.show("Numero Telefonico solo puede ser numerico", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.validEmail(txtEmail.getValue())) {
-            Notification.show("El formato de Email es invalido", Notification.Type.ERROR_MESSAGE);
-            return true;
         }
         return false;
     }
@@ -225,13 +307,17 @@ public class ViewFacilitadorRegister extends VerticalLayout implements View {
     }
 
     private void emptySetValue() {
-        action = "";
         txtDocumento.clear();
         txtNames.clear();
         txtPhoneNumber.clear();
         txtEmail.clear();
     }
+    private void refreshInformationGrid() {
+        collectionFacilitadores = controllerFacilitador.findAllFacilitador();
+        dataProvider = DataProvider.ofCollection(collectionFacilitadores);
+        grid.setDataProvider(dataProvider);
 
+    }
 
 }
 

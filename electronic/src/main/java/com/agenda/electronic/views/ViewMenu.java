@@ -48,7 +48,7 @@ public class ViewMenu extends VerticalLayout implements View {
         MenuBar mainMenu = new MenuBar();
 
         // A top-level menu item that opens a submenu
-        MenuBar.MenuItem mantenimientoEventos = mainMenu.addItem("Mantenimiento de Eventos", null, null);
+        MenuBar.MenuItem mantenimientoEventos = mainMenu.addItem("Eventos", null, null);
         // Submenu item with a sub-submenu
         MenuBar.MenuItem registrarEventos = mantenimientoEventos.addItem("Mantenimiento de Evento", null, new MenuBar.Command() {
             @Override
@@ -70,7 +70,7 @@ public class ViewMenu extends VerticalLayout implements View {
         });
 
         // A top-level menu item that opens a submenu
-        MenuBar.MenuItem mantenimientoInstituciones = mainMenu.addItem("Mantenimiento de Instituciones", null, null);
+        MenuBar.MenuItem mantenimientoInstituciones = mainMenu.addItem("Instituciones", null, null);
         // Submenu item with a sub-submenu
         MenuBar.MenuItem registrarInstituciones = mantenimientoInstituciones.addItem("Registrar Instituciones", null, new MenuBar.Command() {
             @Override
@@ -92,7 +92,7 @@ public class ViewMenu extends VerticalLayout implements View {
         });
 
         // A top-level menu item that opens a submenu
-        MenuBar.MenuItem mantenimientoDeParticipantes = mainMenu.addItem("Mantenimiento de Participantes", null, null);
+        MenuBar.MenuItem mantenimientoDeParticipantes = mainMenu.addItem("Participantes", null, null);
         // Submenu item with a sub-submenu
         MenuBar.MenuItem registrarParticipantes = mantenimientoDeParticipantes.addItem("Registrar Participantes", null, new MenuBar.Command() {
             @Override
@@ -114,7 +114,7 @@ public class ViewMenu extends VerticalLayout implements View {
         });
 
         // A top-level menu item that opens a submenu
-        MenuBar.MenuItem mantenimientoFacilitadores = mainMenu.addItem("Mantenimiento de Facilitadores", null, null);
+        MenuBar.MenuItem mantenimientoFacilitadores = mainMenu.addItem("Facilitadores", null, null);
         // Submenu item with a sub-submenu
         MenuBar.MenuItem registrarFacilitadores = mantenimientoFacilitadores.addItem("Registrar Facilitadores", null, new MenuBar.Command() {
             @Override

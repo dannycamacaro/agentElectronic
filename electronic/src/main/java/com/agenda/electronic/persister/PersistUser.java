@@ -1,6 +1,7 @@
 package com.agenda.electronic.persister;
 
 
+import com.agenda.electronic.entity.UserEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +10,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 @Service
-public class PersisterUser {
+public class PersistUser {
+
+    public static final String QUERY_USER = "from UserEntity u where u.name=:nameUser AND u.password=:passwordUser";
 
     @PersistenceContext
     EntityManager entityManager;
@@ -33,11 +36,12 @@ public class PersisterUser {
     }
 
     public boolean validateUser(String userName, String password) {
-        Boolean result= false;
-        Query existUser = entityManager.createQuery("from UsersEntity where  upper(username)=:userName and  password=:password");
-        existUser.setParameter("username", userName);
-        existUser.setParameter("username", password);
-        existUser.setParameter("state", (byte)1);
+        Boolean result = false;
+        Query existUser = entityManager.createQuery(QUERY_USER, UserEntity.class);
+        existUser.setParameter("nameUser", userName);
+        existUser.setParameter("passwordUser", password);
+        if (existUser.getResultList().size() > 0)
+            result = true;
         return result;
     }
 }

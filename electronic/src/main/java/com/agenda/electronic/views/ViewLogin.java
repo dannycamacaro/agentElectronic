@@ -1,6 +1,7 @@
 package com.agenda.electronic.views;
 
 
+import com.agenda.electronic.controller.ControllerUser;
 import com.agenda.electronic.enums.EnumMessages;
 import com.agenda.electronic.navigator.UniverseNavigator;
 import com.vaadin.annotations.Title;
@@ -23,6 +24,9 @@ public class ViewLogin extends UI implements View {
 
     @Autowired
     ApplicationContext applicationContext;
+
+    @Autowired
+    ControllerUser controllerUser;
 
     @Autowired
     private SpringViewProvider viewProvider;
@@ -76,8 +80,9 @@ public class ViewLogin extends UI implements View {
         btnEntrar.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                //UsuariosEntity entity = controllerLogin.validateLogin(txtUser.getValue(), txtPassword.getValue());
-                iniNavigator();
+                if (controllerUser.validateLogin(txtUser.getValue(), txtPassword.getValue())){
+                    iniNavigator();
+                }
             }
         });
         btnEntrar.addStyleName(ValoTheme.BUTTON_PRIMARY);

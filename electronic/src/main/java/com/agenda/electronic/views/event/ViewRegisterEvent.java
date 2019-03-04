@@ -1,17 +1,24 @@
 package com.agenda.electronic.views.event;
 
+import com.agenda.electronic.controller.ControllerEvent;
+import com.agenda.electronic.entity.EventoEntity;
 import com.agenda.electronic.enums.EnumLabel;
 import com.agenda.electronic.enums.EnumMessages;
 import com.agenda.electronic.util.ValidationsString;
 import com.agenda.electronic.views.ViewMenu;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
+import com.vaadin.ui.components.grid.ItemClickListener;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.security.Provider;
+import java.time.LocalDate;
+import java.util.List;
 
 @UIScope
 @SpringView(name = ViewRegisterEvent.VIEW_NAME)
@@ -20,7 +27,7 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
     public static final String VIEW_NAME = "RegisterEvent";
     //fields
     private TextField txtTema = new TextField(EnumLabel.TEMA_LABEL.getLabel());
-    private PasswordField txtDuracion = new PasswordField(EnumLabel.DURACION_LABEL.getLabel());
+    private TextField txtDuracion = new TextField(EnumLabel.DURACION_LABEL.getLabel());
     private TextField txtUbicacion = new TextField(EnumLabel.UBICACION_LABEL.getLabel());
     private DateField dateFieldFechaInicio = new DateField(EnumLabel.INIT_DATE_LABEL.getLabel());
     private DateField dateFieldFechaFin = new DateField(EnumLabel.FINISH_DATE_LABEL.getLabel());
@@ -35,13 +42,21 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
     private VerticalLayout leftLayout = new VerticalLayout();
     private VerticalLayout rightLayout = new VerticalLayout();
     private HorizontalLayout principalLayout = new HorizontalLayout();
-    private Panel principalPanel = new Panel("Registrar Evento");
+    private Panel principalPanel = new Panel("Mantenimiento de Evento");
     private HorizontalLayout buttonsSecondaryLayout = new HorizontalLayout();
     private HorizontalLayout menuLayout = new HorizontalLayout();
     private HorizontalLayout buttonsPrincipalLayout = new HorizontalLayout();
     private GridLayout fieldsLayout = new GridLayout(2, 5);
+    private Grid<EventoEntity> grid = new Grid<>();
+    private ListDataProvider<EventoEntity> dataProvider;
+    List<EventoEntity> collectionEvent;
 
-    private String action;
+    private String action="";
+
+
+    @Autowired
+    ControllerEvent controllerEvent;
+    private EventoEntity eventEntitySelect;
 
     public ViewRegisterEvent() {
     }
@@ -56,12 +71,39 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
         fieldsLayout.setSpacing(true);
         setPropertiesField();
         setLeftPanel();
+        createGrid();
+        leftLayout.addComponent(grid);
         setRightPanel();
 
         principalPanel.setSizeFull();
         principalPanel.setContent(principalLayout);
+        showFields(false);
         this.addComponents(menuBar, principalPanel);
         this.setComponentAlignment(menuBar, Alignment.TOP_CENTER);
+    }
+
+    private void createGrid() {
+        List<EventoEntity> collectionEvent = controllerEvent.findAllEvent();
+        dataProvider = DataProvider.ofCollection(collectionEvent);
+
+        grid.setEnabled(true);
+        grid.addColumn(EventoEntity::getTema).setCaption(EnumLabel.TEMA_LABEL.getLabel());
+        grid.addColumn(EventoEntity::getLocacion).setCaption(EnumLabel.UBICACION_LABEL.getLabel());
+        grid.addColumn(EventoEntity::getFechainicio).setCaption(EnumLabel.INIT_DATE_LABEL.getLabel());
+        grid.addColumn(EventoEntity::getFechafin).setCaption(EnumLabel.FINISH_DATE_LABEL.getLabel());
+        grid.setDataProvider(dataProvider);
+        grid.addItemClickListener(new ItemClickListener<EventoEntity>() {
+            @Override
+            public void itemClick(Grid.ItemClick<EventoEntity> event) {
+                eventEntitySelect = event.getItem();
+                txtTema.setValue(eventEntitySelect.getTema());
+                txtDuracion.setValue(eventEntitySelect.getDuracion());
+                txtUbicacion.setValue(eventEntitySelect.getLocacion());
+                dateFieldFechaInicio.setValue(eventEntitySelect.getFechainicio());
+                dateFieldFechaFin.setValue(eventEntitySelect.getFechafin());
+
+            }
+        });
     }
 
 
@@ -96,21 +138,48 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 clearFields();
+                clearAction();
+                showFields(false);
             }
         });
         btnAccept.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (action.equalsIgnoreCase("new")) {
+                    addEvent();
                 } else if (action.equalsIgnoreCase("edit")) {
+                    updateEventFields();
+                    editEvent(eventEntitySelect);
                 } else if (action.equalsIgnoreCase("delete")) {
                     processDeleteUser();
+                    delete(eventEntitySelect);
+
                 }
+                clearFields();
+                clearAction();
+                showFields(false);
+                refreshInformationGrid();
             }
         });
 
         buttonsSecondaryLayout.addComponents(btnCancel, btnAccept);
         rightLayout.addComponent(buttonsSecondaryLayout);
+    }
+
+    private void updateEventFields() {
+        eventEntitySelect.setLocacion(txtUbicacion.getValue());
+        eventEntitySelect.setDuracion(txtDuracion.getValue());
+        eventEntitySelect.setTema(txtTema.getValue());
+        eventEntitySelect.setFechainicio(dateFieldFechaInicio.getValue());
+        eventEntitySelect.setFechafin(dateFieldFechaFin.getValue());
+    }
+
+    private void delete(EventoEntity eventEntitySelect) {
+        controllerEvent.delete(eventEntitySelect);
+    }
+
+    private void editEvent(EventoEntity eventEntitySelect) {
+        controllerEvent.update(eventEntitySelect);
     }
 
     private void buildFields() {
@@ -123,8 +192,9 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
         btnNew.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                clearFields();
                 action = "new";
+                clearFields();
+                showFields(true);
             }
         });
         btnEdit.addClickListener(new Button.ClickListener() {
@@ -132,6 +202,7 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 if (!isValidationAllField(EnumMessages.SELECT_REGISTER.getMessage())) {
                     action = "edit";
+                    showFields(true);
                 }
             }
         });
@@ -140,7 +211,7 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 if (!isValidationAllField(EnumMessages.SELECT_REGISTER.getMessage())) {
                     action = "delete";
-                    enableFields(false);
+                    showFields(true);
                 }
             }
         });
@@ -148,16 +219,34 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
         rightLayout.addComponent(buttonsPrincipalLayout);
     }
 
-    private void clearFields() {
+    private void addEvent() {
 
-        action = "";
+        EventoEntity entityEvent = new EventoEntity();
+        if (!isValidationAllField(EnumMessages.MESSAGE_REQUIRED_FIELD.getMessage())) {
+            try {
+                entityEvent.setTema(txtTema.getValue());
+                entityEvent.setDuracion(txtDuracion.getValue());
+                entityEvent.setLocacion(txtUbicacion.getValue());
+                entityEvent.setFechainicio(dateFieldFechaInicio.getValue());
+                entityEvent.setFechafin(dateFieldFechaFin.getValue());
+                controllerEvent.save(entityEvent);
+
+            } catch (Exception e) {
+                Notification.show(EnumMessages.MESSAGES_ERROR_SAVE.getMessage(), Notification.Type.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void clearFields() {
         txtUbicacion.clear();
         dateFieldFechaFin.clear();
         dateFieldFechaInicio.clear();
         txtDuracion.clear();
         txtTema.clear();
     }
-
+    private void clearAction() {
+        action = "";
+    }
     private void enableFields(boolean value) {
         txtUbicacion.setEnabled(value);
         dateFieldFechaFin.setEnabled(value);
@@ -181,28 +270,19 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
 
     private boolean isValidationAllField(String message) {
         if (isValidationFieldEmpty(txtTema)) {
-            Notification.show("Debe llenar el campo Usuario", Notification.Type.ERROR_MESSAGE);
+            Notification.show("Debe llenar el campo tema", Notification.Type.ERROR_MESSAGE);
             return true;
         } else if (isValidationFieldEmpty(txtDuracion)) {
-            Notification.show("Debe llenar el campo Contraseña", Notification.Type.ERROR_MESSAGE);
+            Notification.show("Debe llenar el campo duracion", Notification.Type.ERROR_MESSAGE);
             return true;
         } else if (isValidationFieldEmpty(txtUbicacion)) {
-            Notification.show("Debe llenar el campo Nombre", Notification.Type.ERROR_MESSAGE);
+            Notification.show("Debe llenar el campo ubicacion", Notification.Type.ERROR_MESSAGE);
             return true;
         } else if (dateFieldFechaInicio.toString().isEmpty()) {
-            Notification.show("Debe llenar el campo Apellido", Notification.Type.ERROR_MESSAGE);
+            Notification.show("Debe llenar el campo fecha inicio", Notification.Type.ERROR_MESSAGE);
             return true;
         } else if (dateFieldFechaFin.toString().isEmpty()) {
-            Notification.show("Debe llenar el campo Documento de Identidad", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.onlyString(txtUbicacion.getValue())) {
-            Notification.show("Nombre solo puede ser letras", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.onlyString(dateFieldFechaInicio.getValue().toString())) {
-            Notification.show("Apellido solo puede ser letras", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.onlyNumbers(dateFieldFechaFin.getValue().toString())) {
-            Notification.show("Documento de Identidad solo puede ser numerico", Notification.Type.ERROR_MESSAGE);
+            Notification.show("Debe llenar el campo  fecha fin", Notification.Type.ERROR_MESSAGE);
             return true;
         }
         return false;
@@ -211,7 +291,6 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
     private boolean isValidationFieldEmpty(TextField textField) {
         boolean validation = false;
         if (textField.getValue().isEmpty()) {
-
             validation = true;
         }
         return validation;
@@ -227,12 +306,15 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
 
     }
 
-    private void emptySetValue() {
-        action = "";
-        txtTema.clear();
-        txtDuracion.clear();
-        txtUbicacion.clear();
-        dateFieldFechaInicio.clear();
-        dateFieldFechaFin.clear();
+    private void showFields(Boolean value) {
+        fieldsLayout.setVisible(value);
+        buttonsSecondaryLayout.setVisible(value);
+    }
+
+    private void refreshInformationGrid() {
+        collectionEvent = controllerEvent.findAllEvent();
+        dataProvider = DataProvider.ofCollection(collectionEvent);
+        grid.setDataProvider(dataProvider);
+
     }
 }

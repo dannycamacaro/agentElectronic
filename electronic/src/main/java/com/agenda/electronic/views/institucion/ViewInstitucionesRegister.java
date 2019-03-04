@@ -1,28 +1,38 @@
 package com.agenda.electronic.views.institucion;
 
 
+import com.agenda.electronic.controller.ControllerInstituciones;
+import com.agenda.electronic.entity.InstitucionesEntity;
 import com.agenda.electronic.enums.EnumLabel;
 import com.agenda.electronic.enums.EnumMessages;
 import com.agenda.electronic.util.ValidationsString;
 import com.agenda.electronic.views.ViewMenu;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
+import com.vaadin.ui.components.grid.ItemClickListener;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @UIScope
 @SpringView(name = ViewInstitucionesRegister.VIEW_NAME)
 public class ViewInstitucionesRegister  extends VerticalLayout implements View {
     public static final String VIEW_NAME = "RegisterInstituciones";
 
+    @Autowired
+    ControllerInstituciones controllerInstituciones;
+    
     //fields
     private TextField txtRif = new TextField(EnumLabel.RIF_LABEL.getLabel());
-    private PasswordField txtName = new PasswordField(EnumLabel.PASSWORD_LABEL.getLabel());
-    private TextField txtDireccion = new TextField(EnumLabel.FIRST_NAME_LABEL.getLabel());
-    private TextField txtPersonaContacto = new TextField(EnumLabel.LAST_NAME_LABEL.getLabel());
-    private TextField txtTelefonoPersonaContacto = new TextField(EnumLabel.IDENTITY_DOCUMENT_LABEL.getLabel());
+    private TextField txtName = new TextField(EnumLabel.INSTITUCION_LABEL.getLabel());
+    private TextField txtDireccion = new TextField(EnumLabel.DIRECTION_LABEL.getLabel());
+    private TextField txtPersonaContacto = new TextField(EnumLabel.PERSONA_CONTACTO_LABEL.getLabel());
+    private TextField txtTelefonoPersonaContacto = new TextField(EnumLabel.TEL_PERSONA_LABEL.getLabel());
     private TextField txtPhoneNumber = new TextField(EnumLabel.PHONE_NUMBER_LABEL.getLabel());
     private TextField txtEmail = new TextField(EnumLabel.EMAIL_LABEL.getLabel());
     //Buttons
@@ -36,14 +46,17 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
     private VerticalLayout leftLayout = new VerticalLayout();
     private VerticalLayout rightLayout = new VerticalLayout();
     private HorizontalLayout principalLayout = new HorizontalLayout();
-    private Panel principalPanel = new Panel("Registro de Eventos");
+    private Panel principalPanel = new Panel("Mantenimiento de Institucion");
     private HorizontalLayout operationButtons = new HorizontalLayout();
     private HorizontalLayout operationButtonsFooter = new HorizontalLayout();
     private HorizontalLayout buttonsSecondaryLayout = new HorizontalLayout();
     private HorizontalLayout menuLayout = new HorizontalLayout();
     private HorizontalLayout buttonsPrincipalLayout = new HorizontalLayout();
     private GridLayout fieldsLayout = new GridLayout(2, 5);
-
+    private ListDataProvider<InstitucionesEntity> dataProvider;
+    private Grid<InstitucionesEntity> grid = new Grid<>();
+    List<InstitucionesEntity> collectionInstituciones;
+    private InstitucionesEntity institucionEntitySelected;
     private String action;
 
     public ViewInstitucionesRegister() {
@@ -60,7 +73,9 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
         setPropertiesField();
         setLeftPanel();
         setRightPanel();
-
+        createGrid();
+        leftLayout.addComponent(grid);
+        showFields(false);
         principalPanel.setSizeFull();
         principalPanel.setContent(principalLayout);
         this.addComponents(menuBar, principalPanel);
@@ -109,15 +124,66 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (action.equalsIgnoreCase("new")) {
+                    addInstitucion();
                 } else if (action.equalsIgnoreCase("edit")) {
+                    updateFields();
                 } else if (action.equalsIgnoreCase("delete")) {
-                    processDeleteUser();
+                    deleteInstitucion();
                 }
+                clearFields();
+                clearAction();
+                showFields(false);
+                refreshInformationGrid();
             }
+
         });
 
         buttonsSecondaryLayout.addComponents(btnCancel, btnAccept);
         rightLayout.addComponent(buttonsSecondaryLayout);
+    }
+
+    private void deleteInstitucion() {
+        controllerInstituciones.delete(institucionEntitySelected);
+    }
+
+    private void updateFields() {
+        institucionEntitySelected.setCorreo(txtEmail.getValue());
+        institucionEntitySelected.setDireccion(txtDireccion.getValue());
+        institucionEntitySelected.setTelefonopersona(txtTelefonoPersonaContacto.getValue());
+        institucionEntitySelected.setPersonacontacto(txtPersonaContacto.getValue());
+        institucionEntitySelected.setNombeinstitucion(txtName.getValue());
+        institucionEntitySelected.setRif(txtRif.getValue());
+        institucionEntitySelected.setTelefono(txtPhoneNumber.getValue());
+        institucionEntitySelected.setTelefonopersona(txtTelefonoPersonaContacto.getValue());
+        controllerInstituciones.update(institucionEntitySelected);
+    }
+
+    private void addInstitucion() {
+        InstitucionesEntity entity = new InstitucionesEntity();
+        entity.setCorreo(txtEmail.getValue());
+        entity.setDireccion(txtDireccion.getValue());
+        entity.setTelefonopersona(txtTelefonoPersonaContacto.getValue());
+        entity.setPersonacontacto(txtPersonaContacto.getValue());
+        entity.setNombeinstitucion(txtName.getValue());
+        entity.setRif(txtRif.getValue());
+        entity.setTelefono(txtPhoneNumber.getValue());
+        entity.setTelefonopersona(txtTelefonoPersonaContacto.getValue());
+        controllerInstituciones.save(entity);
+    }
+
+    private void showFields(boolean value) {
+        txtEmail.setVisible(value);
+        txtDireccion.setVisible(value);
+        txtTelefonoPersonaContacto.setVisible(value);
+        txtPersonaContacto.setVisible(value);
+        txtName.setVisible(value);
+        txtRif.setVisible(value);
+        txtPhoneNumber.setVisible(value);
+        buttonsSecondaryLayout.setVisible(value);
+    }
+
+    private void clearAction() {
+        action="";
     }
 
     private void buildFields() {
@@ -132,6 +198,7 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 clearFields();
+                showFields(true);
                 action = "new";
             }
         });
@@ -140,6 +207,7 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 if (!isValidationAllField(EnumMessages.SELECT_REGISTER.getMessage())) {
                     action = "edit";
+                    showFields(true);
                 }
             }
         });
@@ -148,6 +216,7 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 if (!isValidationAllField(EnumMessages.SELECT_REGISTER.getMessage())) {
                     action = "delete";
+                    showFields(true);
                     enableFields(false);
                 }
             }
@@ -157,8 +226,6 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
     }
 
     private void clearFields() {
-
-        action = "";
         txtEmail.clear();
         txtDireccion.clear();
         txtTelefonoPersonaContacto.clear();
@@ -190,48 +257,8 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
         }
     }
 
-
-
-
-
     private boolean isValidationAllField(String message) {
-        if (isValidationFieldEmpty(txtRif)) {
-            Notification.show("Debe llenar el campo Usuario", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (isValidationFieldEmpty(txtName)) {
-            Notification.show("Debe llenar el campo Contraseña", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (isValidationFieldEmpty(txtDireccion)) {
-            Notification.show("Debe llenar el campo Nombre", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (isValidationFieldEmpty(txtPersonaContacto)) {
-            Notification.show("Debe llenar el campo Apellido", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (isValidationFieldEmpty(txtTelefonoPersonaContacto)) {
-            Notification.show("Debe llenar el campo Documento de Identidad", Notification.Type.ERROR_MESSAGE);
-            return true;
-        }  else if (isValidationFieldEmpty(txtPhoneNumber)) {
-            Notification.show("Debe llenar el campo Numero Telefonico", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (isValidationFieldEmpty(txtEmail)) {
-            Notification.show("Debe llenar el campo Email", Notification.Type.ERROR_MESSAGE);
-            return true;
-        }else if (ValidationsString.onlyString(txtDireccion.getValue())) {
-            Notification.show("Nombre solo puede ser letras", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.onlyString(txtPersonaContacto.getValue())) {
-            Notification.show("Apellido solo puede ser letras", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.onlyNumbers(txtTelefonoPersonaContacto.getValue())) {
-            Notification.show("Documento de Identidad solo puede ser numerico", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.onlyNumbers(txtPhoneNumber.getValue())) {
-            Notification.show("Numero Telefonico solo puede ser numerico", Notification.Type.ERROR_MESSAGE);
-            return true;
-        } else if (ValidationsString.validEmail(txtEmail.getValue())) {
-            Notification.show("El formato de Email es invalido", Notification.Type.ERROR_MESSAGE);
-            return true;
-        }
+
         return false;
     }
 
@@ -248,22 +275,40 @@ public class ViewInstitucionesRegister  extends VerticalLayout implements View {
         visibleGridLayout(false);
     }
 
+    private void createGrid() {
+        List<InstitucionesEntity> collectionInstituciones = controllerInstituciones.findAllInstituciones();
+        dataProvider = DataProvider.ofCollection(collectionInstituciones);
 
+        grid.setEnabled(true);
+        grid.addColumn(InstitucionesEntity::getNombeinstitucion).setCaption(EnumLabel.IDENTITY_DOCUMENT_LABEL.getLabel());
+        grid.addColumn(InstitucionesEntity::getPersonacontacto).setCaption(EnumLabel.NAMES_LABEL.getLabel());
+        grid.addColumn(InstitucionesEntity::getTelefonopersona).setCaption(EnumLabel.LAST_NAME_LABEL.getLabel());
+        grid.setDataProvider(dataProvider);
+        grid.addItemClickListener(new ItemClickListener<InstitucionesEntity>() {
+            @Override
+            public void itemClick(Grid.ItemClick<InstitucionesEntity> event) {
+                institucionEntitySelected = event.getItem();
+                txtDireccion.setValue(institucionEntitySelected.getDireccion());
+                txtEmail.setValue(institucionEntitySelected.getCorreo());
+                txtName.setValue(institucionEntitySelected.getNombeinstitucion());
+                txtPersonaContacto.setValue(institucionEntitySelected.getPersonacontacto());
+                txtPhoneNumber.setValue(institucionEntitySelected.getTelefono());
+                txtRif.setValue(institucionEntitySelected.getRif());
+                txtTelefonoPersonaContacto.setValue(institucionEntitySelected.getTelefonopersona());
+
+            }
+        });
+    }
 
 
     private void visibleGridLayout(boolean visible) {
         fieldsLayout.setVisible(visible);
 
     }
+    private void refreshInformationGrid() {
+        collectionInstituciones = controllerInstituciones.findAllInstituciones();
+        dataProvider = DataProvider.ofCollection(collectionInstituciones);
+        grid.setDataProvider(dataProvider);
 
-    private void emptySetValue() {
-        action = "";
-        txtRif.clear();
-        txtName.clear();
-        txtDireccion.clear();
-        txtPersonaContacto.clear();
-        txtTelefonoPersonaContacto.clear();
-        txtPhoneNumber.clear();
-        txtEmail.clear();
     }
 }

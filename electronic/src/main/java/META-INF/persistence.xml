@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="persistenceUnit">
+        <class>com.agenda.electronic.entity.DetalleeventosEntity</class>
+        <class>com.agenda.electronic.entity.DetallefacilitadorEntity</class>
+        <class>com.agenda.electronic.entity.DetalleparticipantesEntity</class>
+        <class>com.agenda.electronic.entity.EventoEntity</class>
+        <class>com.agenda.electronic.entity.FacilitadoresEntity</class>
+        <class>com.agenda.electronic.entity.InstitucionesEntity</class>
+        <class>com.agenda.electronic.entity.ParticipantesEntity</class>
+        <class>com.agenda.electronic.entity.UserEntity</class>
+        <properties>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/dbagendaelectronica"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+        </properties>
+    </persistence-unit>
+</persistence>
