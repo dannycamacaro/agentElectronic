@@ -315,6 +315,5 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
         collectionEvent = controllerEvent.findAllEvent();
         dataProvider = DataProvider.ofCollection(collectionEvent);
         grid.setDataProvider(dataProvider);
-
     }
 }

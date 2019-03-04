@@ -4,8 +4,10 @@ import com.agenda.electronic.navigator.UniverseNavigator;
 import com.agenda.electronic.views.event.ViewConsultEvent;
 import com.agenda.electronic.views.event.ViewRegisterEvent;
 import com.agenda.electronic.views.facilitador.ViewFacilitadorRegister;
+import com.agenda.electronic.views.facilitador.ViewSelectFacilitador;
 import com.agenda.electronic.views.institucion.ViewInstitucionesRegister;
 import com.agenda.electronic.views.participation.ViewParticipationRegister;
+import com.agenda.electronic.views.participation.ViewSelectParticipation;
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -56,82 +58,48 @@ public class ViewMenu extends VerticalLayout implements View {
                 UniverseNavigator.navigate(ViewRegisterEvent.VIEW_NAME);
             }
         });
-        MenuBar.MenuItem consultarEventos = mantenimientoEventos.addItem("Consultar Eventos", null, new MenuBar.Command() {
+        MenuBar.MenuItem consultarEventos = mantenimientoEventos.addItem("Asignar Facilitador", null, new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
+                mainMenu.getUI().getSession().setAttribute("filterUrl", "facilitador");
                 UniverseNavigator.navigate(ViewConsultEvent.VIEW_NAME);
             }
         });
-        MenuBar.MenuItem editarEventos = mantenimientoEventos.addItem("Detalle de Evento", null, new MenuBar.Command() {
+        MenuBar.MenuItem editarEventos = mantenimientoEventos.addItem("Asignar Participantes", null, new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
-                //UniverseNavigator.navigate(EventViews.VIEW_NAME);
+                mainMenu.getUI().getSession().setAttribute("filterUrl", "participation");
+                UniverseNavigator.navigate(ViewConsultEvent.VIEW_NAME);
             }
         });
 
         // A top-level menu item that opens a submenu
         MenuBar.MenuItem mantenimientoInstituciones = mainMenu.addItem("Instituciones", null, null);
         // Submenu item with a sub-submenu
-        MenuBar.MenuItem registrarInstituciones = mantenimientoInstituciones.addItem("Registrar Instituciones", null, new MenuBar.Command() {
+        MenuBar.MenuItem registrarInstituciones = mantenimientoInstituciones.addItem("Mantenimiento de Instituciones", null, new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 UniverseNavigator.navigate(ViewInstitucionesRegister.VIEW_NAME);
-            }
-        });
-        MenuBar.MenuItem consultarInstituciones = mantenimientoInstituciones.addItem("Consultar Instituciones", null, new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                //UniverseNavigator.navigate(EventViews.VIEW_NAME);
-            }
-        });
-        MenuBar.MenuItem editarInstituciones = mantenimientoInstituciones.addItem("Editar Instituciones", null, new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                //UniverseNavigator.navigate(EventViews.VIEW_NAME);
             }
         });
 
         // A top-level menu item that opens a submenu
         MenuBar.MenuItem mantenimientoDeParticipantes = mainMenu.addItem("Participantes", null, null);
         // Submenu item with a sub-submenu
-        MenuBar.MenuItem registrarParticipantes = mantenimientoDeParticipantes.addItem("Registrar Participantes", null, new MenuBar.Command() {
+        MenuBar.MenuItem registrarParticipantes = mantenimientoDeParticipantes.addItem("Mantenimiento de Participantes", null, new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 UniverseNavigator.navigate(ViewParticipationRegister.VIEW_NAME);
-            }
-        });
-        MenuBar.MenuItem consultarParticipantes = mantenimientoDeParticipantes.addItem("Consultar Participantes", null, new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                //UniverseNavigator.navigate(EventViews.VIEW_NAME);
-            }
-        });
-        MenuBar.MenuItem editarParticipantes = mantenimientoDeParticipantes.addItem("Editar Participantes", null, new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                //UniverseNavigator.navigate(EventViews.VIEW_NAME);
             }
         });
 
         // A top-level menu item that opens a submenu
         MenuBar.MenuItem mantenimientoFacilitadores = mainMenu.addItem("Facilitadores", null, null);
         // Submenu item with a sub-submenu
-        MenuBar.MenuItem registrarFacilitadores = mantenimientoFacilitadores.addItem("Registrar Facilitadores", null, new MenuBar.Command() {
+        MenuBar.MenuItem registrarFacilitadores = mantenimientoFacilitadores.addItem("Mantenimiento de  Facilitadores", null, new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 UniverseNavigator.navigate(ViewFacilitadorRegister.VIEW_NAME);
-            }
-        });
-        MenuBar.MenuItem consultarFacilitadores = mantenimientoFacilitadores.addItem("Consultar Facilitadores", null, new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                //UniverseNavigator.navigate(EventViews.VIEW_NAME);
-            }
-        });
-        MenuBar.MenuItem editarFacilitadores = mantenimientoFacilitadores.addItem("Editar Facilitadores", null, new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                //UniverseNavigator.navigate(EventViews.VIEW_NAME);
             }
         });
 
