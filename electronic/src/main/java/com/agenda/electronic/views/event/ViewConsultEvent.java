@@ -6,6 +6,7 @@ import com.agenda.electronic.enums.EnumLabel;
 import com.agenda.electronic.navigator.UniverseNavigator;
 import com.agenda.electronic.views.ViewMenu;
 import com.agenda.electronic.views.facilitador.ViewSelectFacilitador;
+import com.agenda.electronic.views.institucion.ViewInstitucionesSelect;
 import com.agenda.electronic.views.participation.ViewSelectParticipation;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -84,6 +85,8 @@ public class ViewConsultEvent extends VerticalLayout implements View {
                     UniverseNavigator.navigate(ViewSelectParticipation.VIEW_NAME);
                 }else  if (filterUrl.equalsIgnoreCase("facilitador")){
                     UniverseNavigator.navigate(ViewSelectFacilitador.VIEW_NAME);
+                }else  if (filterUrl.equalsIgnoreCase("institucion")){
+                    UniverseNavigator.navigate(ViewInstitucionesSelect.VIEW_NAME);
                 }
             }
         });

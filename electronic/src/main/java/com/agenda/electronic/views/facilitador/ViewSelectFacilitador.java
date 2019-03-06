@@ -83,7 +83,7 @@ public class ViewSelectFacilitador extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (facilitadoresEntitySelected != null) {
-                    collectionFacilitadoresAdded.add(facilitadoresEntitySelected);
+                    //collectionFacilitadoresAdded.add(facilitadoresEntitySelected);
                     controllerFacilitador.saveRelation(facilitadoresEntitySelected, eventoEntitySelected);
                     refreshInformationGridAdded();
                 }
@@ -93,8 +93,8 @@ public class ViewSelectFacilitador extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (facilitadoresEntitySelectedAdded != null) {
-                    collectionFacilitadoresAdded.remove(facilitadoresEntitySelectedAdded);
-                    controllerFacilitador.deleteRelation(facilitadoresEntitySelectedAdded,eventoEntitySelected);
+                    //collectionFacilitadoresAdded.remove(facilitadoresEntitySelectedAdded);
+                    controllerFacilitador.deleteRelation(facilitadoresEntitySelectedAdded, eventoEntitySelected);
                     refreshInformationGridAdded();
                 }
             }
@@ -149,7 +149,7 @@ public class ViewSelectFacilitador extends VerticalLayout implements View {
     }
 
     private void refreshInformationGridAdded() {
-        collectionFacilitadoresAdded =controllerFacilitador.findAllFacilitadorAdded(eventoEntitySelected);
+        collectionFacilitadoresAdded = controllerFacilitador.findAllFacilitadorAdded(eventoEntitySelected);
         dataProvider = DataProvider.ofCollection(collectionFacilitadoresAdded);
         gridAddedFacilitadores.setDataProvider(dataProvider);
 

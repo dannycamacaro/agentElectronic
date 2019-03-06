@@ -1,5 +1,7 @@
 package com.agenda.electronic.controller;
 
+import com.agenda.electronic.entity.EventoEntity;
+import com.agenda.electronic.entity.FacilitadoresEntity;
 import com.agenda.electronic.entity.ParticipantesEntity;
 import com.agenda.electronic.persister.PersisterParticipation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,20 @@ public class ControllerParticipation {
 
     public void delete(ParticipantesEntity participantesEntity) {
         persisterParticipation.delete(participantesEntity);
+    }
+
+    public void deleteRelation(ParticipantesEntity participantesEntity, EventoEntity eventoEntity) {
+        persisterParticipation.deleteRelation(participantesEntity,eventoEntity);
+    }
+
+    public List<ParticipantesEntity> findAllParticipanteAdded(EventoEntity eventoEntity) {
+        List<ParticipantesEntity> entityList = new ArrayList<>();
+        entityList = persisterParticipation.findAllParticipantesAdded(eventoEntity);
+        return entityList;
+    }
+
+    public void saveRelation(ParticipantesEntity participantesEntity, EventoEntity eventoEntity) {
+        persisterParticipation.saveRelation(participantesEntity,eventoEntity);
     }
 
 }

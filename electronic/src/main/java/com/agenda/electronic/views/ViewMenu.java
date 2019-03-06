@@ -6,6 +6,7 @@ import com.agenda.electronic.views.event.ViewRegisterEvent;
 import com.agenda.electronic.views.facilitador.ViewFacilitadorRegister;
 import com.agenda.electronic.views.facilitador.ViewSelectFacilitador;
 import com.agenda.electronic.views.institucion.ViewInstitucionesRegister;
+import com.agenda.electronic.views.institucion.ViewInstitucionesSelect;
 import com.agenda.electronic.views.participation.ViewParticipationRegister;
 import com.agenda.electronic.views.participation.ViewSelectParticipation;
 import com.vaadin.annotations.Title;
@@ -56,6 +57,13 @@ public class ViewMenu extends VerticalLayout implements View {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 UniverseNavigator.navigate(ViewRegisterEvent.VIEW_NAME);
+            }
+        });
+        MenuBar.MenuItem asignarInstitucion = mantenimientoEventos.addItem("Asignar Institucion", null, new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                mainMenu.getUI().getSession().setAttribute("filterUrl", "institucion");
+                UniverseNavigator.navigate(ViewConsultEvent.VIEW_NAME);
             }
         });
         MenuBar.MenuItem consultarEventos = mantenimientoEventos.addItem("Asignar Facilitador", null, new MenuBar.Command() {
