@@ -1,12 +1,12 @@
 package com.agenda.electronic.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "detallefacilitador", schema = "dbagendaelectronica")
-@IdClass(DetallefacilitadorEntityPK.class)
-public class DetallefacilitadorEntity {
+public class DetallefacilitadorEntity implements Serializable {
     private Integer iddetallefacilitador;
     private Integer eventoIdevento;
     private Integer facilitadoresIdfacilitadores;
@@ -22,7 +22,6 @@ public class DetallefacilitadorEntity {
         this.iddetallefacilitador = iddetallefacilitador;
     }
 
-    @Id
     @Column(name = "evento_idevento")
     public Integer getEventoIdevento() {
         return eventoIdevento;
@@ -32,7 +31,6 @@ public class DetallefacilitadorEntity {
         this.eventoIdevento = eventoIdevento;
     }
 
-    @Id
     @Column(name = "facilitadores_idfacilitadores")
     public Integer getFacilitadoresIdfacilitadores() {
         return facilitadoresIdfacilitadores;

@@ -6,6 +6,7 @@ public enum EnumLabel {
     EDITAR_LABEL("Editar"),
     ELIMINAR_LABEL("Eliminar"),
     ACEPTAR_LABEL("Aceptar"),
+    QUITAR_LABEL("Quitar"),
     ROW_COUNT_CAPTION_LABEL("%d registro(s) encontrados"),
     REFRESCAR_LABEL("Refrescar"),
     ELIMINAR_REGISTRO_LABEL("¿Desea eliminar el registro?"),

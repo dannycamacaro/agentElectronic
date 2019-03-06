@@ -35,6 +35,7 @@ public class ViewConsultEvent extends VerticalLayout implements View {
     private Grid<EventoEntity> grid = new Grid<>();
     private ListDataProvider<EventoEntity> dataProvider;
     private EventoEntity eventEntitySelect;
+    private List<EventoEntity> collectionEvent;
     String filterUrl;
 
 
@@ -45,7 +46,6 @@ public class ViewConsultEvent extends VerticalLayout implements View {
     public ViewConsultEvent() {
     }
 
-    @PostConstruct
     private void buildForm() {
         this.setWidth("100%");
         this.setHeightUndefined();
@@ -64,7 +64,7 @@ public class ViewConsultEvent extends VerticalLayout implements View {
     }
 
     private void createGrid() {
-        List<EventoEntity> collectionEvent = controllerEvent.findAllEvent();
+        collectionEvent = controllerEvent.findAllEvent();
         dataProvider = DataProvider.ofCollection(collectionEvent);
 
         grid.setEnabled(true);
@@ -77,10 +77,12 @@ public class ViewConsultEvent extends VerticalLayout implements View {
             @Override
             public void itemClick(Grid.ItemClick<EventoEntity> event) {
                 eventEntitySelect = event.getItem();
-                grid.getUI().getSession().setAttribute(EventoEntity.class, event.getItem());
-                if (filterUrl == "participation"){
+                if (event.getItem()!= null){
+                    grid.getUI().getSession().setAttribute("Event", event.getItem());
+                }
+                if (filterUrl.equalsIgnoreCase("participation")){
                     UniverseNavigator.navigate(ViewSelectParticipation.VIEW_NAME);
-                }else  if (filterUrl == "facilitador"){
+                }else  if (filterUrl.equalsIgnoreCase("facilitador")){
                     UniverseNavigator.navigate(ViewSelectFacilitador.VIEW_NAME);
                 }
             }
