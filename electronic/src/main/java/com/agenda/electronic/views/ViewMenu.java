@@ -80,6 +80,13 @@ public class ViewMenu extends VerticalLayout implements View {
                 UniverseNavigator.navigate(ViewConsultEvent.VIEW_NAME);
             }
         });
+        MenuBar.MenuItem ConsultarEvento = mantenimientoEventos.addItem("Consulta General de Evento", null, new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                mainMenu.getUI().getSession().setAttribute("filterUrl", "ConsultInformation");
+                UniverseNavigator.navigate(ViewConsultEvent.VIEW_NAME);
+            }
+        });
 
         // A top-level menu item that opens a submenu
         MenuBar.MenuItem mantenimientoInstituciones = mainMenu.addItem("Instituciones", null, null);

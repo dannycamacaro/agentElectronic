@@ -87,6 +87,8 @@ public class ViewConsultEvent extends VerticalLayout implements View {
                     UniverseNavigator.navigate(ViewSelectFacilitador.VIEW_NAME);
                 }else  if (filterUrl.equalsIgnoreCase("institucion")){
                     UniverseNavigator.navigate(ViewInstitucionesSelect.VIEW_NAME);
+                }else  if (filterUrl.equalsIgnoreCase("ConsultInformation")){
+                    UniverseNavigator.navigate(ViewConsultInformationEvent.VIEW_NAME);
                 }
             }
         });

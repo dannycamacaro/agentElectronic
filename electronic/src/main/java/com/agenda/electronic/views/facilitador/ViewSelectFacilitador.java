@@ -116,9 +116,9 @@ public class ViewSelectFacilitador extends VerticalLayout implements View {
         dataProvider = DataProvider.ofCollection(collectionFacilitadores);
 
         gridFacilitadores.setEnabled(true);
-        gridFacilitadores.addColumn(FacilitadoresEntity::getIddocumento).setCaption(EnumLabel.TEMA_LABEL.getLabel());
-        gridFacilitadores.addColumn(FacilitadoresEntity::getNombres).setCaption(EnumLabel.UBICACION_LABEL.getLabel());
-        gridFacilitadores.addColumn(FacilitadoresEntity::getApellidos).setCaption(EnumLabel.INIT_DATE_LABEL.getLabel());
+        gridFacilitadores.addColumn(FacilitadoresEntity::getIddocumento).setCaption(EnumLabel.IDENTITY_DOCUMENT_LABEL.getLabel());
+        gridFacilitadores.addColumn(FacilitadoresEntity::getNombres).setCaption(EnumLabel.NAMES_LABEL.getLabel());
+        gridFacilitadores.addColumn(FacilitadoresEntity::getApellidos).setCaption(EnumLabel.LAST_NAME_LABEL.getLabel());
         gridFacilitadores.setDataProvider(dataProvider);
         gridFacilitadores.addItemClickListener(new ItemClickListener<FacilitadoresEntity>() {
             @Override
@@ -134,9 +134,9 @@ public class ViewSelectFacilitador extends VerticalLayout implements View {
             dataProviderAdded = DataProvider.ofCollection(collectionFacilitadoresAdded);
 
             gridAddedFacilitadores.setEnabled(true);
-            gridAddedFacilitadores.addColumn(FacilitadoresEntity::getIddocumento).setCaption(EnumLabel.TEMA_LABEL.getLabel());
-            gridAddedFacilitadores.addColumn(FacilitadoresEntity::getNombres).setCaption(EnumLabel.UBICACION_LABEL.getLabel());
-            gridAddedFacilitadores.addColumn(FacilitadoresEntity::getApellidos).setCaption(EnumLabel.INIT_DATE_LABEL.getLabel());
+            gridAddedFacilitadores.addColumn(FacilitadoresEntity::getIddocumento).setCaption(EnumLabel.IDENTITY_DOCUMENT_LABEL.getLabel());
+            gridAddedFacilitadores.addColumn(FacilitadoresEntity::getNombres).setCaption(EnumLabel.NAMES_LABEL.getLabel());
+            gridAddedFacilitadores.addColumn(FacilitadoresEntity::getApellidos).setCaption(EnumLabel.LAST_NAME_LABEL.getLabel());
             gridAddedFacilitadores.setDataProvider(dataProviderAdded);
             gridAddedFacilitadores.addItemClickListener(new ItemClickListener<FacilitadoresEntity>() {
                 @Override
