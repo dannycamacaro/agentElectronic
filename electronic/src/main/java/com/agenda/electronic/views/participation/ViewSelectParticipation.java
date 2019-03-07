@@ -52,10 +52,6 @@ public class ViewSelectParticipation extends VerticalLayout implements View {
     private ParticipantesEntity participanteEntitySelectedAdded;
     private String action;
 
-    public ViewSelectParticipation() {
-
-    }
-
 
     private void buildForm() {
         this.setWidth("100%");
