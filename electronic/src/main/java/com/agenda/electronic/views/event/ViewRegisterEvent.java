@@ -16,8 +16,7 @@ import com.vaadin.ui.components.grid.ItemClickListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.security.Provider;
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @UIScope
@@ -37,6 +36,7 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
     private Button btnEdit = new Button(EnumLabel.EDITAR_LABEL.getLabel());
     private Button btnDelete = new Button(EnumLabel.ELIMINAR_LABEL.getLabel());
     private Button btnCancel = new Button(EnumLabel.CANCELAR_LABEL.getLabel());
+    private Label numRegister = new Label();
     private MenuBar menuBar;
     //Layouts
     private VerticalLayout leftLayout = new VerticalLayout();
@@ -49,9 +49,9 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
     private GridLayout fieldsLayout = new GridLayout(2, 5);
     private Grid<EventoEntity> grid = new Grid<>();
     private ListDataProvider<EventoEntity> dataProvider;
-    List<EventoEntity> collectionEvent;
+    List<EventoEntity> collectionEvent = new ArrayList<>();
 
-    private String action="";
+    private String action = "";
 
 
     @Autowired
@@ -83,9 +83,9 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
     }
 
     private void createGrid() {
-        List<EventoEntity> collectionEvent = controllerEvent.findAllEvent();
+        collectionEvent = controllerEvent.findAllEvent();
         dataProvider = DataProvider.ofCollection(collectionEvent);
-
+        refreshCounterRegister();
         grid.setEnabled(true);
         grid.addColumn(EventoEntity::getTema).setCaption(EnumLabel.TEMA_LABEL.getLabel());
         grid.addColumn(EventoEntity::getLocacion).setCaption(EnumLabel.UBICACION_LABEL.getLabel());
@@ -215,8 +215,12 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
                 }
             }
         });
-        buttonsPrincipalLayout.addComponents(btnNew, btnEdit, btnDelete);
+        buttonsPrincipalLayout.addComponents(btnNew, btnEdit, btnDelete,numRegister);
         rightLayout.addComponent(buttonsPrincipalLayout);
+    }
+
+    private void refreshCounterRegister() {
+        numRegister.setValue("Total de Registros :" + collectionEvent.size());
     }
 
     private void addEvent() {
@@ -244,9 +248,11 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
         txtDuracion.clear();
         txtTema.clear();
     }
+
     private void clearAction() {
         action = "";
     }
+
     private void enableFields(boolean value) {
         txtUbicacion.setEnabled(value);
         dateFieldFechaFin.setEnabled(value);
@@ -315,5 +321,6 @@ public class ViewRegisterEvent extends VerticalLayout implements View {
         collectionEvent = controllerEvent.findAllEvent();
         dataProvider = DataProvider.ofCollection(collectionEvent);
         grid.setDataProvider(dataProvider);
+        refreshCounterRegister();
     }
 }
