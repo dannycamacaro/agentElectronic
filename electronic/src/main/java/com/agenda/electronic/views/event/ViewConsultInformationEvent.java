@@ -5,6 +5,7 @@ import com.agenda.electronic.controller.ControllerInstituciones;
 import com.agenda.electronic.controller.ControllerParticipation;
 import com.agenda.electronic.entity.EventoEntity;
 import com.agenda.electronic.entity.FacilitadoresEntity;
+import com.agenda.electronic.entity.InstitucionesEntity;
 import com.agenda.electronic.entity.ParticipantesEntity;
 import com.agenda.electronic.enums.EnumLabel;
 import com.agenda.electronic.views.ViewMenu;
@@ -45,15 +46,18 @@ public class ViewConsultInformationEvent extends VerticalLayout implements View 
     private VerticalLayout maxlayout = new VerticalLayout();
     private HorizontalLayout principalLayout = new HorizontalLayout();
     private Panel principalPanel = new Panel("Consulta de datos de Evento");
-    private HorizontalLayout buttonsPrincipalLayout = new HorizontalLayout();
+    private HorizontalLayout centerLayout = new HorizontalLayout();
     private HorizontalLayout menuLayout = new HorizontalLayout();
     private GridLayout fieldsLayout = new GridLayout(2, 5);
     private ListDataProvider<FacilitadoresEntity> dataProvider;
     private ListDataProvider<ParticipantesEntity> dataProviderPartcipates;
+    private ListDataProvider<InstitucionesEntity> dataInstituciones;
     private Grid<FacilitadoresEntity> gridFacilitadores = new Grid<>();
     private Grid<ParticipantesEntity> gridParticipantes = new Grid<>();
+    private Grid<InstitucionesEntity> gridInstituciones = new Grid<>();
     List<FacilitadoresEntity> collectionFacilitadores;
     List<ParticipantesEntity> collectionParticipantes;
+    List<InstitucionesEntity> collectionInstituciones;
 
     public ViewConsultInformationEvent() {
 
@@ -68,14 +72,31 @@ public class ViewConsultInformationEvent extends VerticalLayout implements View 
         fieldsLayout.setSpacing(true);
         createLeftGrid();
         createRightGrid();
+        createCenterGrid();
         buildLeftLayout();
         buildRightLayout();
+        centerLayout.addComponents(gridInstituciones);
+        centerLayout.setWidth("100%");
+        centerLayout.setHeightUndefined();
         principalLayout.addComponents(leftLayout, rightLayout);
-        maxlayout.addComponents(principalLayout, buttonsPrincipalLayout);
+        maxlayout.addComponents(centerLayout,principalLayout);
         principalPanel.setSizeFull();
         principalPanel.setContent(maxlayout);
         this.addComponents(menuBar, principalPanel);
         this.setComponentAlignment(menuBar, Alignment.TOP_CENTER);
+    }
+
+    private void createCenterGrid() {
+        collectionInstituciones = controllerInstituciones.findAllParticipanteAdded(eventoEntitySelected);
+        dataInstituciones = DataProvider.ofCollection(collectionInstituciones);
+
+        gridInstituciones.setEnabled(true);
+        gridInstituciones.addColumn(InstitucionesEntity::getRif).setCaption(EnumLabel.INSTITUCION_LABEL.getLabel());
+        gridInstituciones.addColumn(InstitucionesEntity::getNombeinstitucion).setCaption(EnumLabel.RIF_LABEL.getLabel());
+        gridInstituciones.addColumn(InstitucionesEntity::getTelefono).setCaption(EnumLabel.PHONE_NUMBER_LABEL.getLabel());
+        gridInstituciones.setDataProvider(dataInstituciones);
+        gridInstituciones.setWidth("100%");
+        gridInstituciones.setHeight("200px");
     }
 
     private void buildLeftLayout() {
