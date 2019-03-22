@@ -38,7 +38,7 @@ public class ViewLogin extends UI implements View {
         panelPrincipal.setSizeFull();
         HorizontalLayout root = new HorizontalLayout();
         VerticalLayout visitantes = new VerticalLayout();
-        ExternalResource externalResource = new ExternalResource("VAADIN/img/logo.png");
+        ExternalResource externalResource = new ExternalResource("VAADIN/img/login.jpeg");
         Image image = new Image();
         image.setSource(externalResource);
         image.setResponsive(true);

@@ -25,6 +25,15 @@
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/java/META-INF/persistence.xml" />
       </configuration>
     </facet>
+    <facet type="gwt" name="GWT">
+      <configuration>
+        <setting name="additionalCompilerParameters" value="-Xss1024k" />
+        <setting name="compilerParameters" value="-draftCompile" />
+        <setting name="compilerMaxHeapSize" value="1024" />
+        <setting name="gwtScriptOutputStyle" value="OBF" />
+        <setting name="webFacet" value="Web" />
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />

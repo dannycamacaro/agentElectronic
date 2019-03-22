@@ -68,7 +68,66 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>8.6.4</version>
+                <configuration>
+                    <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+                    <webappDirectory>src/main/resources/VAADIN
+                    </webappDirectory>
+                    <hostedWebapp>src/main/resources/VAADIN
+                    </hostedWebapp>
+                    <noServer>true</noServer>
+                    <draftCompile>true</draftCompile>
+                    <compileReport>false</compileReport>
+                    <style>OBF</style>
+                    <strict>true</strict>
+                </configuration>
+                <executions>
+                    <execution>
+                        <configuration>
+                        </configuration>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>resources</goal>
+                            <goal>update-widgetset</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/VAADIN</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/resources/VAADIN</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
     </build>
 
 </project>

@@ -38,11 +38,12 @@ public class ViewMenu extends VerticalLayout implements View {
         }
         this.setWidth("100%");
         this.setHeightUndefined();
-        ExternalResource externalResource = new ExternalResource("VAADIN/img/menuLogo.jpeg");
+        ExternalResource externalResource = new ExternalResource("VAADIN/img/menu.jpeg");
         Image image = new Image();
         image.setSource(externalResource);
-        image.setResponsive(true);
-        image.setSizeFull();
+        //image.setResponsive(true);
+        image.setWidth("100%");
+        image.setHeight("80%");
         addComponent(image);
         this.setComponentAlignment(mainMenu, Alignment.TOP_CENTER);
     }
